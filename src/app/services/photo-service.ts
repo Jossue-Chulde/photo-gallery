@@ -2,14 +2,16 @@ import { Injectable, signal } from '@angular/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import type { Photo } from '@capacitor/camera';
 import { Filesystem, Directory } from '@capacitor/filesystem';
-
+import { Preferences } from '@capacitor/preferences';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PhotoService {
   public photos = signal<UserPhoto[]>([]);
-  // CHANGE: Update the `addNewToGallery()` method
+  
+  private PHOTO_STORAGE: string = 'photos';
+
   public async addNewToGallery() {
     // Take a photo
     const capturedPhoto = await Camera.getPhoto({
@@ -20,6 +22,11 @@ export class PhotoService {
     // Save the picture and add it to photo collection
     const savedImageFile = await this.savePicture(capturedPhoto);
     this.photos.update((photos) => [savedImageFile, ...photos]);
+
+    Preferences.set({
+      key: this.PHOTO_STORAGE,
+      value: JSON.stringify(this.photos()),
+    });
   }
 
   // CHANGE: Add the `savePicture()` method
@@ -56,7 +63,27 @@ export class PhotoService {
       reader.readAsDataURL(blob);
     });
   }
+
+public async loadSaved() {
+    // Retrieve cached photo array data
+    const { value: photoList } = await Preferences.get({ key: this.PHOTO_STORAGE });
+    const photos = (photoList ? JSON.parse(photoList) : []) as UserPhoto[];
+
+    for (const photo of photos) {
+      // Read each saved photo's data from the Filesystem
+      const file = await Filesystem.readFile({
+        path: photo.filepath,
+        directory: Directory.Data,
+      });
+
+      // Web platform only: Load the photo as base64 data
+      photo.webviewPath = `data:image/jpeg;base64,${file.data}`;
+    }
+
+    this.photos.set(photos);
+  }
 }
+
 
 export interface UserPhoto {
   filepath: string;

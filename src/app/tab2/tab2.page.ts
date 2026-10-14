@@ -22,18 +22,7 @@ import { PhotoService } from '../services/photo-service';
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
   standalone: true,
-  imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonFab,
-    IonFabButton,
-    IonIcon,
-  ],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon],
 })
 export class Tab2Page {
   public photoService = inject(PhotoService);
@@ -42,6 +31,11 @@ export class Tab2Page {
     addIcons({ camera });
   }
 
+  // CHANGE: Add call to `loadSaved()` when navigating to the Photos tab
+  async ngOnInit() {
+    await this.photoService.loadSaved();
+  }
+  
   addPhotoToGallery() {
     this.photoService.addNewToGallery();
   }
