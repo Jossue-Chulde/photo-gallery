@@ -13,6 +13,9 @@ $RECYCLE.BIN/
 log.txt
 
 
+/node_modules
+
+
 /.sourcemaps
 /.versions
 /coverage
