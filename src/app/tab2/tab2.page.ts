@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -10,63 +10,57 @@ import {
   IonFab,
   IonFabButton,
   IonIcon,
+  IonButton,
+  AlertController,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { camera } from 'ionicons/icons';
+import { camera, trash } from 'ionicons/icons';
 import { PhotoService } from '../services/photo-service';
+import { UserPhoto } from '../services/photo-service';
+
 @Component({
   selector: 'app-tab2',
-  standalone: true,
-  templateUrl: './tab2.page.html',
-  styleUrls: ['./tab2.page.scss'],
-  imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonFab,
-    IonFabButton,
-    IonIcon,
-  ],
+  templateUrl: 'tab2.page.html',
+  styleUrls: ['tab2.page.scss'],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon, IonButton],
 })
 export class Tab2Page implements OnInit {
-  public readonly photoService = inject(PhotoService);
-  public readonly busy = signal(true);
-  public readonly message = signal('');
+
+  public photoService = inject(PhotoService);
+  private alertController = inject(AlertController);
+
   constructor() {
-    addIcons({ camera });
+    addIcons({ camera, trash });
   }
-  async ngOnInit(): Promise<void> {
-    try {
-      await this.photoService.loadSaved();
-    } catch (error) {
-      console.error(error);
-      this.message.set('No se pudieron cargar las fotos guardadas.');
-    } finally {
-      this.busy.set(false);
-    }
+
+  async ngOnInit() {
+    await this.photoService.loadSaved();
   }
-  async addPhotoToGallery(): Promise<void> {
-    if (this.busy()) return;
-    this.busy.set(true);
-    this.message.set('');
-    try {
-      await this.photoService.addNewToGallery();
-    } catch (error) {
-      const detail = error instanceof Error ? error.message : String(error);
-      if (/cancel|dismiss/i.test(detail))
-        this.message.set('Captura cancelada.');
-      else {
-        console.error(error);
-        this.message.set(
-          'No se pudo tomar o guardar la foto. Revisa los permisos y el espacio disponible.',
-        );
-      }
-    } finally {
-      this.busy.set(false);
-    }
+
+  addPhotoToGallery() {
+    this.photoService.addNewToGallery();
+  }
+
+  async deletePhoto(photo: UserPhoto, position: number) {
+    const alert = await this.alertController.create({
+      header: 'Eliminar foto',
+      message: '¿Estás seguro de que quieres eliminar esta foto?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            this.photoService.deletePicture(photo, position);
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 }
