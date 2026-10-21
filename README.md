@@ -3,12 +3,14 @@
 Se desarrollo una aplicación móvil diseñada para capturar imágenes con la cámara del dispositivo, almacenarlas de forma segura en el almacenamiento local de la app, visualizarlas en una galería y eliminarlas con confirmación previa.
 > Nota: Este proyecto está configurado para fines de prueba y desarrollo personal.
 
-### Tecnologias Utilizadas
-|---------------------------|-----------|------------|
-| Framework        | Ionic / Angular (Standalone)  | 
-| Lenguaje  | HTML y TypeScript  | 
-| Plugins Nativos (Capacitor)  | @capacitor/camera - @capacitor/filesystem - @capacitor/preferences  |
-| UI/UX | Componentes de Ionic (ion-grid, ion-fab, ion-alert) e iconos de ionicons |
+### Tecnologías Utilizadas
+
+| Categoría | Tecnología / Herramienta |
+| :--- | :--- |
+| **Framework** | Ionic / Angular (Standalone) |
+| **Lenguaje** | HTML y TypeScript |
+| **Plugins Nativos (Capacitor)** | `@capacitor/camera` <br> `@capacitor/filesystem` <br> `@capacitor/preferences` |
+| **UI/UX** | Componentes de Ionic (`ion-grid`, `ion-fab`, `ion-alert`) e iconos de `ionicons` |
 
 ## Características Principales
 - Captura de Fotos: Uso de la cámara nativa a través de @capacitor/camera.
